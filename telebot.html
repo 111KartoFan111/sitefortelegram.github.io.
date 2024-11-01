@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Сайт с API</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 50px;
+            background-color: #f0f8ff;
+            color: #333;
+        }
+        h1 {
+            color: #4CAF50;
+            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
+        button {
+            margin: 10px;
+            padding: 12px 25px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        input {
+            padding: 10px;
+            margin: 10px;
+            font-size: 16px;
+            width: 220px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        table {
+            margin-top: 20px;
+            border-collapse: collapse;
+            width: 100%;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            background-color: #ffffff;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        th, td {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 12px;
+        }
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+        td a {
+            color: #4CAF50;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        td a:hover {
+            color: #45a049;
+        }
+        #output {
+            margin-top: 20px;
+            font-size: 1.1em;
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .input-group {
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Добро пожаловать на сайт!</h1>
+    <button onclick="tellJoke()">Рассказать шутку</button>
+    <button onclick="getIpAddress()">Узнать IP</button>
+    <button onclick="suggestActivity()">Придумать занятие</button>
+    <button onclick="randomCatFact()">Случайный факт о кошке</button>
+
+    <div class="input-group">
+        <input type="text" id="cityInput" placeholder="Введите город">
+        <button onclick="checkWeather()">Посмотреть погоду</button>
+    </div>
+
+    <div class="input-group">
+        <input type="text" id="countryInput" placeholder="Введите страну">
+        <button onclick="getUniversities()">Получить список университетов</button>
+    </div>
+
+    <div id="output"></div>
+
+    <script>
+        async function tellJoke() {
+            try {
+                const response = await fetch('https://official-joke-api.appspot.com/random_joke');
+                const joke = await response.json();
+                document.getElementById('output').innerText = `${joke.setup} - ${joke.punchline}`;
+            } catch (error) {
+                document.getElementById('output').innerText = "Ошибка при получении шутки.";
+            }
+        }
+
+        async function getIpAddress() {
+            try {
+                const response = await fetch('https://api.ipify.org?format=json');
+                const data = await response.json();
+                document.getElementById('output').innerText = `Ваш IP-адрес: ${data.ip}`;
+            } catch (error) {
+                document.getElementById('output').innerText = "Ошибка при получении IP-адреса.";
+            }
+        }
+
+        async function suggestActivity() {
+            try {
+                const response = await fetch('https://www.boredapi.com/api/activity/');
+                const activity = await response.json();
+                document.getElementById('output').innerText = `Попробуйте: ${activity.activity}`;
+            } catch (error) {
+                document.getElementById('output').innerText = "Ошибка при получении занятия.";
+            }
+        }
+
+        async function randomCatFact() {
+            try {
+                const response = await fetch('https://meowfacts.herokuapp.com/');
+                const fact = await response.json();
+                document.getElementById('output').innerText = fact.data[0];
+            } catch (error) {
+                document.getElementById('output').innerText = "Ошибка при получении факта о кошках.";
+            }
+        }
+
+        async function checkWeather() {
+            const city = document.getElementById('cityInput').value;
+            const apiKey = "e3d322b93c83edd3b51903ec24f7011e";
+            if (!city) {
+                document.getElementById('output').innerText = "Пожалуйста, введите город.";
+                return;
+            }
+            try {
+                const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric&lang=ru`);
+                if (!response.ok) {
+                    throw new Error('Ошибка при получении данных о погоде.');
+                }
+                const weather = await response.json();
+                document.getElementById('output').innerText = `Погода в ${city}: ${weather.weather[0].description}, температура: ${weather.main.temp}°C`;
+            } catch (error) {
+                document.getElementById('output').innerText = `Ошибка: ${error.message}`;
+            }
+        }
+
+        async function getUniversities() {
+            const country = document.getElementById('countryInput').value;
+            if (!country) {
+                document.getElementById('output').innerText = "Пожалуйста, введите страну.";
+                return;
+            }
+            try {
+                const response = await fetch(`http://universities.hipolabs.com/search?country=${country}`);
+                if (!response.ok) {
+                    throw new Error(`Ошибка HTTP: ${response.status}`);
+                }
+                const universities = await response.json();
+                if (universities.length === 0) {
+                    document.getElementById('output').innerText = "Университеты не найдены для указанной страны.";
+                } else {
+                    let tableHTML = '<table><tr><th>Университет</th><th>Веб-сайт</th></tr>';
+                    universities.forEach(uni => {
+                        const webPage = uni.web_pages ? uni.web_pages[0] : 'Не указано';
+                        tableHTML += `<tr><td>${uni.name}</td><td><a href="${webPage}" target="_blank">${webPage}</a></td></tr>`;
+                    });
+                    tableHTML += '</table>';
+                    document.getElementById('output').innerHTML = tableHTML;
+                }
+            } catch (error) {
+                document.getElementById('output').innerText = `Ошибка: ${error.message}`;
+            }
+        }
+    </script>
+</body>
+</html>
