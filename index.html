@@ -82,7 +82,6 @@
     <h1>Добро пожаловать на сайт!</h1>
     <button onclick="tellJoke()">Рассказать шутку</button>
     <button onclick="getIpAddress()">Узнать IP</button>
-    <button onclick="suggestActivity()">Придумать занятие</button>
     <button onclick="randomCatFact()">Случайный факт о кошке</button>
 
     <div class="input-group">
@@ -117,17 +116,6 @@
                 document.getElementById('output').innerText = "Ошибка при получении IP-адреса.";
             }
         }
-
-        async function suggestActivity() {
-            try {
-                const response = await fetch('https://www.boredapi.com/api/activity/');
-                const activity = await response.json();
-                document.getElementById('output').innerText = `Попробуйте: ${activity.activity}`;
-            } catch (error) {
-                document.getElementById('output').innerText = "Ошибка при получении занятия.";
-            }
-        }
-
         async function randomCatFact() {
             try {
                 const response = await fetch('https://meowfacts.herokuapp.com/');
