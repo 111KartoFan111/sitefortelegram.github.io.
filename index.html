@@ -164,7 +164,7 @@
                 return;
             }
             try {
-                const response = await fetch(`http://universities.hipolabs.com/search?country=${country}`);
+                const response = await fetch(`http://universities.hipolabs.com/search?country=Kazakhstan`);
                 if (!response.ok) {
                     throw new Error(`Ошибка HTTP: ${response.status}`);
                 }
