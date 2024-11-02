@@ -164,7 +164,7 @@
                 return;
             }
             try {
-                const response = await fetch(`http://universities.hipolabs.com/search?country=Kazakhstan`);
+                const response = await fetch(`http://universities.hipolabs.com/search?country=${country}`);
                 if (!response.ok) {
                     throw new Error(`Ошибка HTTP: ${response.status}`);
                 }
@@ -178,7 +178,14 @@
                         tableHTML += `<tr><td>${uni.name}</td><td><a href="${webPage}" target="_blank">${webPage}</a></td></tr>`;
                     });
                     tableHTML += '</table>';
-                    document.getElementById('output').innerHTML = tableHTML;
+                    const apiInfoHTML = `
+                        <div>
+                            <p>Данные предоставлены <a href="http://hipolabs.com" target="_blank">hipo</a>.</p>
+                            <p>GitHub: <a href="https://github.com/Hipo/university-domains-list" target="_blank">https://github.com/Hipo/university-domains-list</a></p>
+                            <p>Пример запроса: <a href="http://universities.hipolabs.com/search?name=middle&country=Turkey" target="_blank">universities.hipolabs.com</a></p>
+                        </div>
+                    `;
+                    document.getElementById('output').innerHTML = tableHTML + apiInfoHTML;
                 }
             } catch (error) {
                 document.getElementById('output').innerText = `Ошибка: ${error.message}`;
